@@ -1,5 +1,7 @@
 import rvo.math as rvo_math
 
+from .obstacle import Obstacle
+
 MAX_LEAF_SIZE = 10
 
 
@@ -248,12 +250,12 @@ class KdTree:
                 newObstacle.point_ = splitPoint
                 newObstacle.previous_ = obstacleJ1
                 newObstacle.next_ = obstacleJ2
-                newObstacle.convex_ = true
+                newObstacle.convex_ = True
                 newObstacle.direction_ = obstacleJ1.direction_
 
-                newObstacle.id_ = self.simulator_.obstacles_.Count
+                newObstacle.id_ = len(self.simulator_.obstacles_)
 
-                self.simulator_.obstacles_.Add(newObstacle)
+                self.simulator_.obstacles_.append(newObstacle)
 
                 obstacleJ1.next_ = newObstacle
                 obstacleJ2.previous_ = newObstacle

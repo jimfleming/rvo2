@@ -65,7 +65,7 @@ class KdTree:
         self.agentTree_ = None
         self.obstacleTree_ = None
 
-    def buildAgentTree(self):
+    def build_agent_tree(self):
         """
         Builds an agent k-D tree.
         """
@@ -74,16 +74,16 @@ class KdTree:
             self.agentTree_ = [AgentTreeNode() for i in range(2 * len(self.agents_))]
 
         if len(self.agents_) != 0:
-            self.buildAgentTreeRecursive(0, len(self.agents_), 0)
+            self.build_agent_tree_recursive(0, len(self.agents_), 0)
 
-    def buildObstacleTree(self):
+    def build_obstacle_tree(self):
         """
         Builds an obstacle k-D tree.
         """
         obstacles = list(self.simulator_.obstacles_)
-        self.obstacleTree_ = self.buildObstacleTreeRecursive(obstacles)
+        self.obstacleTree_ = self.build_obstacle_treeRecursive(obstacles)
 
-    def computeAgentNeighbors(self, agent, rangeSq):
+    def compute_agent_neighbors(self, agent, rangeSq):
         """
         Computes the agent neighbors of the specified agent.
 
@@ -91,9 +91,9 @@ class KdTree:
             agent (Agent): The agent for which agent neighbors are to be computed.
             rangeSq (float): The squared range around the agent.
         """
-        self.queryAgentTreeRecursive(agent, rangeSq, 0)
+        self.query_agent_tree_recursive(agent, rangeSq, 0)
 
-    def computeObstacleNeighbors(self, agent, rangeSq):
+    def compute_obstacle_neighbors(self, agent, rangeSq):
         """
         Computes the obstacle neighbors of the specified agent.
 
@@ -101,9 +101,9 @@ class KdTree:
             agent (Agent): The agent for which obstacle neighbors are to be computed.
             rangeSq (float): The squared range around the agent.
         """
-        self.queryObstacleTreeRecursive(agent, rangeSq, self.obstacleTree_)
+        self.query_obstacle_tree_recursive(agent, rangeSq, self.obstacleTree_)
 
-    def buildAgentTreeRecursive(self, begin, end, node):
+    def build_agent_tree_recursive(self, begin, end, node):
         """
         Recursive method for building an agent k-D tree.
 
@@ -155,10 +155,10 @@ class KdTree:
             self.agentTree_[node].left_ = node + 1
             self.agentTree_[node].right_ = node + 2 * leftSize
 
-            self.buildAgentTreeRecursive(begin, left, self.agentTree_[node].left_)
-            self.buildAgentTreeRecursive(left, end, self.agentTree_[node].right_)
+            self.build_agent_tree_recursive(begin, left, self.agentTree_[node].left_)
+            self.build_agent_tree_recursive(left, end, self.agentTree_[node].right_)
 
-    def buildObstacleTreeRecursive(self, obstacles):
+    def build_obstacle_treeRecursive(self, obstacles):
         """
         Recursive method for building an obstacle k-D tree.
 
@@ -192,8 +192,8 @@ class KdTree:
                 obstacleJ1 = obstacles[j]
                 obstacleJ2 = obstacleJ1.next_
 
-                j1LeftOfI = rvo_math.leftOf(obstacleI1.point_, obstacleI2.point_, obstacleJ1.point_)
-                j2LeftOfI = rvo_math.leftOf(obstacleI1.point_, obstacleI2.point_, obstacleJ2.point_)
+                j1LeftOfI = rvo_math.left_of(obstacleI1.point_, obstacleI2.point_, obstacleJ1.point_)
+                j2LeftOfI = rvo_math.left_of(obstacleI1.point_, obstacleI2.point_, obstacleJ2.point_)
 
                 if j1LeftOfI >= -rvo_math.EPSILON and j2LeftOfI >= -rvo_math.EPSILON:
                     leftSize += 1
@@ -229,8 +229,8 @@ class KdTree:
             obstacleJ1 = obstacles[j]
             obstacleJ2 = obstacleJ1.next_
 
-            j1LeftOfI = rvo_math.leftOf(obstacleI1.point_, obstacleI2.point_, obstacleJ1.point_)
-            j2LeftOfI = rvo_math.leftOf(obstacleI1.point_, obstacleI2.point_, obstacleJ2.point_)
+            j1LeftOfI = rvo_math.left_of(obstacleI1.point_, obstacleI2.point_, obstacleJ1.point_)
+            j2LeftOfI = rvo_math.left_of(obstacleI1.point_, obstacleI2.point_, obstacleJ2.point_)
 
             if j1LeftOfI >= -rvo_math.EPSILON and j2LeftOfI >= -rvo_math.EPSILON:
                 leftObstacles[leftCounter] = obstacles[j]
@@ -270,12 +270,12 @@ class KdTree:
                     leftCounter += 1
 
         node.obstacle_ = obstacleI1
-        node.left_ = self.buildObstacleTreeRecursive(leftObstacles)
-        node.right_ = self.buildObstacleTreeRecursive(rightObstacles)
+        node.left_ = self.build_obstacle_treeRecursive(leftObstacles)
+        node.right_ = self.build_obstacle_treeRecursive(rightObstacles)
 
         return node
 
-    def queryAgentTreeRecursive(self, agent, rangeSq, node):
+    def query_agent_tree_recursive(self, agent, rangeSq, node):
         """
         Recursive method for computing the agent neighbors of the specified agent.
 
@@ -286,26 +286,26 @@ class KdTree:
         """
         if self.agentTree_[node].end_ - self.agentTree_[node].begin_ <= MAX_LEAF_SIZE:
             for i in range(self.agentTree_[node].begin_, self.agentTree_[node].end_):
-                rangeSq = agent.insertAgentNeighbor(self.agents_[i], rangeSq)
+                rangeSq = agent.insert_agent_neighbor(self.agents_[i], rangeSq)
         else:
-            distSqLeft = rvo_math.sqr(max(0.0, self.agentTree_[self.agentTree_[node].left_].minX_ - agent.position_.x_)) + rvo_math.sqr(max(0.0, agent.position_.x_ - self.agentTree_[self.agentTree_[node].left_].maxX_)) + rvo_math.sqr(max(0.0, self.agentTree_[self.agentTree_[node].left_].minY_ - agent.position_.y_)) + rvo_math.sqr(max(0.0, agent.position_.y_ - self.agentTree_[self.agentTree_[node].left_].maxY_))
-            distSqRight = rvo_math.sqr(max(0.0, self.agentTree_[self.agentTree_[node].right_].minX_ - agent.position_.x_)) + rvo_math.sqr(max(0.0, agent.position_.x_ - self.agentTree_[self.agentTree_[node].right_].maxX_)) + rvo_math.sqr(max(0.0, self.agentTree_[self.agentTree_[node].right_].minY_ - agent.position_.y_)) + rvo_math.sqr(max(0.0, agent.position_.y_ - self.agentTree_[self.agentTree_[node].right_].maxY_))
+            distSqLeft = rvo_math.square(max(0.0, self.agentTree_[self.agentTree_[node].left_].minX_ - agent.position_.x_)) + rvo_math.square(max(0.0, agent.position_.x_ - self.agentTree_[self.agentTree_[node].left_].maxX_)) + rvo_math.square(max(0.0, self.agentTree_[self.agentTree_[node].left_].minY_ - agent.position_.y_)) + rvo_math.square(max(0.0, agent.position_.y_ - self.agentTree_[self.agentTree_[node].left_].maxY_))
+            distSqRight = rvo_math.square(max(0.0, self.agentTree_[self.agentTree_[node].right_].minX_ - agent.position_.x_)) + rvo_math.square(max(0.0, agent.position_.x_ - self.agentTree_[self.agentTree_[node].right_].maxX_)) + rvo_math.square(max(0.0, self.agentTree_[self.agentTree_[node].right_].minY_ - agent.position_.y_)) + rvo_math.square(max(0.0, agent.position_.y_ - self.agentTree_[self.agentTree_[node].right_].maxY_))
 
             if distSqLeft < distSqRight:
                 if distSqLeft < rangeSq:
-                    rangeSq = self.queryAgentTreeRecursive(agent, rangeSq, self.agentTree_[node].left_)
+                    rangeSq = self.query_agent_tree_recursive(agent, rangeSq, self.agentTree_[node].left_)
 
                     if distSqRight < rangeSq:
-                        rangeSq = self.queryAgentTreeRecursive(agent, rangeSq, self.agentTree_[node].right_)
+                        rangeSq = self.query_agent_tree_recursive(agent, rangeSq, self.agentTree_[node].right_)
             else:
                 if distSqRight < rangeSq:
-                    rangeSq = self.queryAgentTreeRecursive(agent, rangeSq, self.agentTree_[node].right_)
+                    rangeSq = self.query_agent_tree_recursive(agent, rangeSq, self.agentTree_[node].right_)
 
                     if distSqLeft < rangeSq:
-                        rangeSq = self.queryAgentTreeRecursive(agent, rangeSq, self.agentTree_[node].left_)
+                        rangeSq = self.query_agent_tree_recursive(agent, rangeSq, self.agentTree_[node].left_)
         return rangeSq
 
-    def queryObstacleTreeRecursive(self, agent, rangeSq, node):
+    def query_obstacle_tree_recursive(self, agent, rangeSq, node):
         """
         Recursive method for computing the obstacle neighbors of the specified agent.
 
@@ -318,16 +318,16 @@ class KdTree:
             obstacle1 = node.obstacle_
             obstacle2 = obstacle1.next_
 
-            agentLeftOfLine = rvo_math.leftOf(obstacle1.point_, obstacle2.point_, agent.position_)
+            agentLeftOfLine = rvo_math.left_of(obstacle1.point_, obstacle2.point_, agent.position_)
 
-            self.queryObstacleTreeRecursive(agent, rangeSq, node.left_ if agentLeftOfLine >= 0.0 else node.right_)
+            self.query_obstacle_tree_recursive(agent, rangeSq, node.left_ if agentLeftOfLine >= 0.0 else node.right_)
 
-            distSqLine = rvo_math.sqr(agentLeftOfLine) / rvo_math.absSq(obstacle2.point_ - obstacle1.point_)
+            distSqLine = rvo_math.square(agentLeftOfLine) / rvo_math.abs_sq(obstacle2.point_ - obstacle1.point_)
 
             if distSqLine < rangeSq:
                 if agentLeftOfLine < 0.0:
                     # Try obstacle at this node only if agent is on right side of obstacle (and can see obstacle).
-                    agent.insertObstacleNeighbor(node.obstacle_, rangeSq)
+                    agent.insert_obstacle_neighbor(node.obstacle_, rangeSq)
 
                 # Try other side of line.
-                self.queryObstacleTreeRecursive(agent, rangeSq, node.right_ if agentLeftOfLine >= 0.0 else node.left_)
+                self.query_obstacle_tree_recursive(agent, rangeSq, node.right_ if agentLeftOfLine >= 0.0 else node.left_)

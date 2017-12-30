@@ -9,7 +9,7 @@ A sufficiently small positive number.
 EPSILON = 0.00001
 
 
-def absSq(vector):
+def abs_sq(vector):
     """
     Computes the squared length of a specified two-dimensional vector.
 
@@ -49,7 +49,7 @@ def det(vector1, vector2):
     return vector1.x_ * vector2.y_ - vector1.y_ * vector2.x_
 
 
-def distSqPointLineSegment(vector1, vector2, vector3):
+def dist_sq_point_line_segment(vector1, vector2, vector3):
     """
     Computes the squared distance from a line segment with the specified endpoints to a specified point.
 
@@ -61,18 +61,18 @@ def distSqPointLineSegment(vector1, vector2, vector3):
     Returns:
         float: The squared distance from the line segment to the point.
     """
-    r = ((vector3 - vector1) @ (vector2 - vector1)) / absSq(vector2 - vector1)
+    r = ((vector3 - vector1) @ (vector2 - vector1)) / abs_sq(vector2 - vector1)
 
     if r < 0.0:
-        return absSq(vector3 - vector1)
+        return abs_sq(vector3 - vector1)
 
     if r > 1.0:
-        return absSq(vector3 - vector2)
+        return abs_sq(vector3 - vector2)
 
-    return absSq(vector3 - (vector1 + r * (vector2 - vector1)))
+    return abs_sq(vector3 - (vector1 + r * (vector2 - vector1)))
 
 
-def leftOf(a, b, c):
+def left_of(a, b, c):
     """
     Computes the signed distance from a line connecting the specified points to a specified point.
 
@@ -87,7 +87,7 @@ def leftOf(a, b, c):
     return det(a - c, b - a)
 
 
-def sqr(scalar):
+def square(scalar):
     """
     Computes the square of a float.
 

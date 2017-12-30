@@ -19,7 +19,7 @@ class Vector2:
         self.y_ = y
 
     def __str__(self):
-        return "({}, {})".format(self.x_, self.y_)
+        return "Vector2(x={}, y={})".format(self.x_, self.y_)
 
     @property
     def x(self):
@@ -69,4 +69,4 @@ class Vector2:
         Returns:
             float: The length of the two-dimensional vector.
         """
-        return math.sqrt(rvo_math.absSq(self))
+        return math.sqrt(rvo_math.abs_sq(self))

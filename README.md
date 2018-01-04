@@ -1,32 +1,32 @@
 Optimal Reciprocal Collision Avoidance
 ======================================
 
-<http://gamma.cs.unc.edu/RVO2/>
+Original site: <http://gamma.cs.unc.edu/RVO2/>
+Original repo: <https://github.com/snape/RVO2-CS>
 
-[![Build Status](https://travis-ci.org/snape/RVO2-CS.svg?branch=master)](https://travis-ci.org/snape/RVO2-CS)
-[![Build status](https://ci.appveyor.com/api/projects/status/k9sjnt4ejn9a5qbs/branch/master?svg=true)](https://ci.appveyor.com/project/snape/rvo2-cs)
+This is almost a line-for-line port of the C# version of RV02 to pure Python 3. It is not meant to be peformant but simple.
 
-Copyright 2008 University of North Carolina at Chapel Hill
+Example:
 
-Licensed under the Apache License, Version 2.0 (the "License");
-you may not use this file except in compliance with the License.
-You may obtain a copy of the License at
+```
+from rvo.simulator import Simulator
 
-<http://www.apache.org/licenses/LICENSE-2.0>
+simulator = Simulator()
+id0 = simulator.add_agent(Vector2(0, 0))
+id1 = simulator.add_agent(Vector2(0, 1))
+id2 = simulator.add_agent(Vector2(1, 1))
 
-Unless required by applicable law or agreed to in writing, software
-distributed under the License is distributed on an "AS IS" BASIS,
-WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-See the License for the specific language governing permissions and
-limitations under the License.
+goal = Vector2(0, 0)
+goal0 = goal - simulator.agents_[id0].position_
+goal1 = goal - simulator.agents_[id1].position_
+goal2 = goal - simulator.agents_[id2].position_
 
-Please send all bug reports to [geom@cs.unc.edu](mailto:geom@cs.unc.edu).
+while True:
+    simulator.set_agent_pref_velocity(id0, goal0)
+    simulator.set_agent_pref_velocity(id1, goal1)
+    simulator.set_agent_pref_velocity(id2, goal2)
 
-The authors may be contacted via:
+    simulator.step()
+```
 
-Jur van den Berg, Stephen J. Guy, Jamie Snape, Ming C. Lin, and Dinesh Manocha  
-Dept. of Computer Science  
-201 S. Columbia St.  
-Frederick P. Brooks, Jr. Computer Science Bldg.  
-Chapel Hill, N.C. 27599-3175  
-United States of America
+See [Circle](examples/circle.py) and [Blocks](examples/blocks.py) for more involved examples.
